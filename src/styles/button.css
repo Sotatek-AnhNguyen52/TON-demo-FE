@@ -16,6 +16,7 @@
   border: none;
   box-shadow: 0 4px #999;
   position: relative;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .my-press-button:hover {
