@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
 import TonWeb from "tonweb";
 import { Buffer } from 'buffer';
+import '../styles/wallet-connect.css';
 
 window.Buffer = window.Buffer || Buffer;
 
@@ -30,10 +31,10 @@ const WalletConnect: React.FC = () => {
   
 
   return (
-    <div style={{ justifyContent: "center", alignItems: "center", marginTop: "100px", display: "flex", flexDirection: "column", gap: "20px" }}>
+    <div className="my-wallet-connect">
       <span>Demo connect Ton wallet</span>
       <TonConnectButton />
-      <h1>Balance: {balance !== null ? `${balance} TON` : "Loading..."}</h1>
+      <b>Balance: {balance !== null ? `${balance} TON` : "..."}</b>
     </div>
   );
 };

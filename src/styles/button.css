@@ -1,0 +1,68 @@
+.my-press-button {
+  width: 150px;
+  height: 150px;
+  border-radius: 100%;
+  border: 1px solid black;
+  user-select: none;
+}
+
+.my-press-button {
+  font-size: 24px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color: #0098ea;
+  border: none;
+  box-shadow: 0 4px #999;
+  position: relative;
+}
+
+.my-press-button:hover {
+  background-color: #0098ea;
+}
+
+.my-press-button:active {
+  background-color: #0098ea;
+  box-shadow: 0 2px #666;
+  transform: translateY(4px);
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-claim-button {
+    margin-top: 10px;
+    border-radius: 8px;
+    background-color: #0098ea;
+    color: white;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.floating-plus-one {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    font-size: 32px;
+    font-weight: bold;
+    color: black;
+    animation: floatAndFade 1s forwards;
+    font: 'Inter';
+}
+
+@keyframes floatAndFade {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(50px, -100px);
+    }
+}

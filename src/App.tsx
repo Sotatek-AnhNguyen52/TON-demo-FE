@@ -1,15 +1,16 @@
 import React from "react";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
-import WalletConnect from "./components/WalletConnect";
+import { AppProvider } from "./contexts/AppContext";
+import Home from "./layout/home";
 
 const App: React.FC = () => {
   return (
-    <TonConnectUIProvider manifestUrl="http://localhost:3000/tonconnect-manifest.json">
-      <div className="App">
-        <header className="App-header">
-          <WalletConnect />
-        </header>
-      </div>
+    <TonConnectUIProvider manifestUrl="https://tuanh2211.netlify.app/tonconnect-manifest.json">
+      <AppProvider>
+        <div className="App">
+            <Home />
+        </div>
+      </AppProvider>
     </TonConnectUIProvider>
   );
 };
