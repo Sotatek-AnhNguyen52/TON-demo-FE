@@ -9,7 +9,7 @@ const ButtonClaim: React.FC = () => {
   const [clicks, setClicks] = useState<number[]>([]);
 
   const handleClick = () => {
-    increment();
+    increment();    
     const newClick = Date.now();
     setClicks([...clicks, newClick]);
     setTimeout(() => {
@@ -18,8 +18,6 @@ const ButtonClaim: React.FC = () => {
       );
     }, 1000);
   };
-
-  console.log(clicks);
 
   return (
     <div className="button-container">
