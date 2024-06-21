@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { TonConnectUIProvider } from "@tonconnect/ui-react";
 import { AppProvider } from "./contexts/AppContext";
 import Home from "./layout/home/home";
+
 
 const App: React.FC = () => {
   return (

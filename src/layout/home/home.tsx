@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAppContext } from "../../contexts/AppContext";
 import "./home.css";
 import WalletConnect from "../../components/WalletConnect";
-import ButtonClaim from "../../components/ButtonClaim";
+import ButtonClaim from "../../components/Claim";
 
 
 window.Buffer = window.Buffer || Buffer;

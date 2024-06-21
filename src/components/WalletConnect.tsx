@@ -3,6 +3,7 @@ import { TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
 import TonWeb from "tonweb";
 import { Buffer } from 'buffer';
 import '../styles/wallet-connect.css';
+import { useAppContext } from "../contexts/AppContext";
 
 window.Buffer = window.Buffer || Buffer;
 
@@ -10,6 +11,8 @@ const WalletConnect: React.FC = () => {
   const [balance, setBalance] = useState<string | null>(null);
   const wallet = useTonWallet();
 
+  const { userInfo } = useAppContext();
+  
   useEffect(() => {
     const fetchBalance = async () => {
       if (wallet) {
@@ -32,7 +35,7 @@ const WalletConnect: React.FC = () => {
 
   return (
     <div className="my-wallet-connect">
-      <span>Demo connect Ton wallet</span>
+      <span>User: {userInfo ? userInfo.username : '...'}</span>
       <TonConnectButton />
       <b>Balance: {balance !== null ? `${balance} TON` : "..."}</b>
     </div>
