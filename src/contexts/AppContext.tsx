@@ -36,11 +36,11 @@ export const AppProvider: React.FC<PropsFC> = ({ children }) => {
     const hash = window.location.hash.substring(1);
     const parsedData = parseTGHashData(hash);
     if (parsedData) {
+      setUserInfo(parsedData);
       const loggedUser = Number(localStorage.getItem(LOGGED_USER));
       if (loggedUser && loggedUser === parsedData.id) {
         return;
       }
-      setUserInfo(parsedData);
       loginUser(parsedData).then((data) => {
         if (data) {
           setAuthToken(data.sync_data.auth_token);
