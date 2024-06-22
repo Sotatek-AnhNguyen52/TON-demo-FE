@@ -1,16 +1,8 @@
 import axios from 'axios';
-import { apiUrl } from '../configs';
 import { UserInfo } from '../types/common';
 import { JWT } from '../constant';
-
-const API_BASE_URL = apiUrl;
-
-const axiosInstance = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-});
+import { apiUrl } from '../configs';
+import { axiosInstance } from './axios';
 
 axiosInstance.interceptors.request.use((config) => {
     const authToken = localStorage.getItem(JWT);
@@ -23,7 +15,7 @@ axiosInstance.interceptors.request.use((config) => {
 });
 
 const axiosInstanceNotAuth = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: apiUrl,
     headers: {
         'Content-Type': 'application/json'
     },
@@ -32,6 +24,10 @@ const axiosInstanceNotAuth = axios.create({
 interface UpScorePayload {
     points: number;
     remaining_energy: number;
+}
+
+interface ClaimPayload {
+    to: string;
 }
 
 interface GetScoreResponse {
@@ -55,6 +51,16 @@ export interface LoginResponse {
     };
     message: string;
 }
+
+export const claim = async (data: ClaimPayload) => {
+    try {
+        const response = await axiosInstance.post('/tg/claim', data);
+        return response.data;
+    } catch (error) {
+        console.error('Error claim token:', error);
+        throw error;
+    }
+};
 
 export const upScore = async (data: UpScorePayload) => {
     try {

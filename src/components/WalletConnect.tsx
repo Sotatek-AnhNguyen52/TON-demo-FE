@@ -1,43 +1,64 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
 import TonWeb from "tonweb";
-import { Buffer } from 'buffer';
-import '../styles/wallet-connect.css';
+import { Buffer } from "buffer";
+import "../styles/wallet-connect.css";
 import { useAppContext } from "../contexts/AppContext";
+import { contractAddress } from "../configs";
+import useFetchJettonBalance from "../hooks/use-fetch-jetton-balance";
+import { fetchData } from "../service/token-service";
+
+const BN = TonWeb.utils.BN;
 
 window.Buffer = window.Buffer || Buffer;
 
 const WalletConnect: React.FC = () => {
-  const [balance, setBalance] = useState<string | null>(null);
-  const wallet = useTonWallet();
-
   const { userInfo } = useAppContext();
-  
+  const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
+  const [tokenDecimal, setTokenDecimal] = useState<string | null>(null);
+
+  const { balance, loading, shouldRefresh, metadata } = useFetchJettonBalance();
+
   useEffect(() => {
-    const fetchBalance = async () => {
-      if (wallet) {
-        try {
-          const tonweb = new TonWeb();
-          const balance = await tonweb.getBalance(wallet.account.address);
-          setBalance(TonWeb.utils.fromNano(balance));
-        } catch (error) {
-          console.error("Error fetching balance:", error);
-          setBalance(null);
-        }
-      } else {
-        setBalance(null);
+    if (!metadata) {
+      return;
+    }
+    const fetchTokenInfo = async () => {
+      const tokenInfo = await fetchData(metadata);
+      if (tokenInfo) {
+        setTokenSymbol(tokenInfo.symbol);
+        setTokenDecimal(tokenInfo.decimals);
       }
     };
+    fetchTokenInfo();
+  }, [metadata]);
 
-    fetchBalance();
-  }, [wallet]);
+  const realBalance = useMemo(() => {
+    if (!balance || !tokenDecimal) {
+      return null;
+    }
+    
+    const decimal = new BN(tokenDecimal);
+    const divisor = new BN(10).pow(decimal);
+    const bal = new BN(balance);
+    
+    const integerPart = bal.div(divisor);
+    
+    const fractionalPart = bal.mod(divisor).toString().padStart(decimal.toNumber(), '0');
   
+    return `${integerPart.toString()}.${fractionalPart}`;
+  }, [balance, tokenDecimal]);
 
   return (
     <div className="my-wallet-connect">
-      <span>User: {userInfo ? userInfo.username : '...'}</span>
+      <span>User: {userInfo ? userInfo.username : "..."}</span>
       <TonConnectButton />
-      <b>Balance: {balance !== null ? `${balance} TON` : "..."}</b>
+      <b>
+        Balance:{" "}
+        {realBalance !== null
+          ? `${realBalance} ${tokenSymbol ? tokenSymbol : ""}`
+          : "..."}
+      </b>
     </div>
   );
 };

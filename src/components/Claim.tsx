@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../styles/button.css";
 import { ADD_SCORE } from "../constant";
-import { upScore, getScore } from '../service/game-service';
-import useDebounce from '../hooks/use-debounce';
+import { upScore, getScore, claim } from "../service/game-service";
+import useDebounce from "../hooks/use-debounce";
+import { useTonAddress } from "@tonconnect/ui-react";
 
 window.Buffer = window.Buffer || Buffer;
 
@@ -10,7 +11,11 @@ const ButtonClaim: React.FC = () => {
   const [count, setCount] = useState<number>(0);
   const [clicks, setClicks] = useState<number[]>([]);
   const [points, setPoints] = useState<number>(0);
+  const [isClaiming, setIsClaiming] = useState<boolean>(false);
+  const [displaySuccess, setDisplaySuccess] = useState<boolean>(false);
   const debouncedPoints = useDebounce(points, 1000);
+
+  const userFriendlyAddress = useTonAddress();
 
   useEffect(() => {
     const fetchInitialScore = async () => {
@@ -18,7 +23,7 @@ const ButtonClaim: React.FC = () => {
         const scoreData = await getScore();
         setCount(Number(scoreData.value.points));
       } catch (error) {
-        console.error('Failed to fetch initial score', error);
+        console.error("Failed to fetch initial score", error);
       }
     };
 
@@ -34,7 +39,7 @@ const ButtonClaim: React.FC = () => {
           const scoreData = await getScore();
           setCount(Number(scoreData.value.points));
         } catch (error) {
-          console.error('Failed to update score', error);
+          console.error("Failed to update score", error);
         }
       };
 
@@ -59,21 +64,44 @@ const ButtonClaim: React.FC = () => {
     }, 1000);
   };
 
+  const handleClaim = async () => {
+    if (count === 0) {
+      return;
+    }
+    setIsClaiming(true);
+    const data = await claim({ to: userFriendlyAddress });
+    setIsClaiming(false);
+    const scoreData = await getScore();
+    setCount(Number(scoreData.value.points));
+    setDisplaySuccess(true);
+    setTimeout(() => {
+      setDisplaySuccess(false);
+    }, 2000);
+  };
+
   return (
     <div className="button-container">
       <div className="my-press-button" onClick={handleClick}>
         {clicks.map((click, index) => (
-          <span
+          <div
             key={click}
             className="floating-plus-one"
             // style={{ animationDelay: `${index * 0.1}s` }}
           >
             +{ADD_SCORE}
-          </span>
+          </div>
         ))}
       </div>
       <b>{"Count: " + count}</b>
-      <div className="my-claim-button">Claim</div>
+      <div
+        className="my-claim-button"
+        onClick={() => {
+          if (!isClaiming) handleClaim();
+        }}
+      >
+        {isClaiming ? "Claiming..." : "Claim"}
+      </div>
+      {displaySuccess && <span>Successfull!</span>}
     </div>
   );
 };
