@@ -3,6 +3,7 @@ import { UserInfo } from '../types/common';
 import { parseTGHashData } from '../helper';
 import { loginUser } from '../service/game-service';
 import { JWT, LOGGED_USER, TWA_HASH } from '../constant';
+import useFetchJettonBalance from '../hooks/use-fetch-jetton-balance';
 
 interface AppContextModel {
   count: number;
@@ -10,6 +11,9 @@ interface AppContextModel {
   decrement: () => void;
   userInfo: UserInfo | null;
   authToken: string | null;
+  balance: string | null;
+  metadata: string | null;
+  shouldRefreshBalance: () => void;
 }
 
 const AppContext = createContext<AppContextModel | null>(null);
@@ -28,6 +32,9 @@ export const AppProvider: React.FC<PropsFC> = ({ children }) => {
   const [count, setCount] = useState(0);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [authToken, setAuthToken] = useState<string | null>(null);
+
+
+  const [balance, loading, shouldRefreshBalance, metadata] = useFetchJettonBalance();
 
   useEffect(() => {
     if (!window.location.hash.includes(TWA_HASH)) {
@@ -60,7 +67,10 @@ export const AppProvider: React.FC<PropsFC> = ({ children }) => {
     increment,
     decrement,
     userInfo,
-    authToken
+    authToken,
+    balance,
+    metadata,
+    shouldRefreshBalance
   };
 
   return (

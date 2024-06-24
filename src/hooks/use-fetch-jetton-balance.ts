@@ -3,14 +3,14 @@ import TonWeb from "tonweb";
 import { contractAddress, tonWebApiKey } from "../configs";
 import { useTonWallet } from "@tonconnect/ui-react";
 
-const useFetchJettonBalance = () => {
+const useFetchJettonBalance = (): [string | null, boolean, () => void, string | null] => {
   const [balance, setBalance] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [metadata, setMetadata] = useState<string | null>(null);
   const wallet = useTonWallet();
 
-  const shouldRefresh = () => {
+  const shouldRefreshBalnce = () => {
     setRefresh((prev) => !prev);
   };
 
@@ -43,7 +43,7 @@ const useFetchJettonBalance = () => {
 
         const metadata = await jettonMinter.getJettonData();
         setMetadata(metadata.jettonContentUri);
-        
+
         const jettonWalletAddress = await jettonMinter.getJettonWalletAddress(
           new TonWeb.utils.Address(wallet.account.address)
         );
@@ -74,7 +74,7 @@ const useFetchJettonBalance = () => {
     fetchJettonBalance();
   }, [refresh, wallet]);
 
-  return { balance, loading, shouldRefresh, metadata };
+  return [balance, loading, shouldRefreshBalnce, metadata];
 };
 
 export default useFetchJettonBalance;

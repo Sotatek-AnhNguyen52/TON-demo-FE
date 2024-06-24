@@ -17,7 +17,7 @@ const WalletConnect: React.FC = () => {
   const [tokenSymbol, setTokenSymbol] = useState<string | null>(null);
   const [tokenDecimal, setTokenDecimal] = useState<string | null>(null);
 
-  const { balance, loading, shouldRefresh, metadata } = useFetchJettonBalance();
+  const { balance, metadata } = useAppContext();
 
   useEffect(() => {
     if (!metadata) {
