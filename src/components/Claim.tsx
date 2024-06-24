@@ -4,6 +4,7 @@ import { ADD_SCORE } from "../constant";
 import { upScore, getScore, claim } from "../service/game-service";
 import useDebounce from "../hooks/use-debounce";
 import { useTonAddress } from "@tonconnect/ui-react";
+import useFetchJettonBalance from "../hooks/use-fetch-jetton-balance";
 
 window.Buffer = window.Buffer || Buffer;
 
@@ -16,6 +17,8 @@ const ButtonClaim: React.FC = () => {
   const debouncedPoints = useDebounce(points, 1000);
 
   const userFriendlyAddress = useTonAddress();
+
+  const { shouldRefresh } = useFetchJettonBalance();
 
   useEffect(() => {
     const fetchInitialScore = async () => {
@@ -75,6 +78,7 @@ const ButtonClaim: React.FC = () => {
     setCount(Number(scoreData.value.points));
     setDisplaySuccess(true);
     setTimeout(() => {
+      shouldRefresh();
       setDisplaySuccess(false);
     }, 2000);
   };

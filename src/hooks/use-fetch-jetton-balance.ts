@@ -24,6 +24,7 @@ const useFetchJettonBalance = () => {
   useEffect(() => {
     async function fetchJettonBalance() {
       if (!wallet) {
+        clearState();
         return;
       }
       try {
