@@ -69,7 +69,7 @@ const ButtonClaim: React.FC = () => {
   };
 
   const handleClaim = async () => {
-    if (count === 0) {
+    if (count === 0 || !userFriendlyAddress) {
       return;
     }
     setIsClaiming(true);
