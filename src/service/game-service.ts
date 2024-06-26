@@ -4,15 +4,15 @@ import { JWT } from '../constant';
 import { apiUrl } from '../configs';
 import { axiosInstance } from './axios';
 
-axiosInstance.interceptors.request.use((config) => {
-    const authToken = localStorage.getItem(JWT);
-    if (authToken) {
-        config.headers['Authorization'] = `Bearer ${authToken}`;
-    }
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
+// axiosInstance.interceptors.request.use((config) => {
+//     const authToken = localStorage.getItem(JWT);
+//     if (authToken) {
+//         config.headers['Authorization'] = `Bearer ${authToken}`;
+//     }
+//     return config;
+// }, (error) => {
+//     return Promise.reject(error);
+// });
 
 const axiosInstanceNotAuth = axios.create({
     baseURL: apiUrl,
@@ -28,6 +28,20 @@ interface UpScorePayload {
 
 interface ClaimPayload {
     to: string;
+}
+
+interface RequestClaimPayload {
+    to: string;
+    amount: string;
+}
+
+interface RequestedClaimPayload {
+    id: string;
+    amount: string;
+    merkleProof: string;
+    treeIndex: string;
+    claimMaster: string;
+    isClaimed: boolean;
 }
 
 interface GetScoreResponse {
@@ -52,15 +66,35 @@ export interface LoginResponse {
     message: string;
 }
 
-export const claim = async (data: ClaimPayload) => {
+// export const claim = async (data: ClaimPayload) => {
+//     try {
+//         const response = await axiosInstance.post('/tg/claim', data);
+//         return response.data;
+//     } catch (error) {
+//         console.error('Error claim token:', error);
+//         throw error;
+//     }
+// };
+
+export const requestClaim = async (data: RequestClaimPayload) => {
     try {
-        const response = await axiosInstance.post('/tg/claim', data);
-        return response.data;
+        const response = await axiosInstance.post('/tg/request-claim', data);
+        return response.data.data;
     } catch (error) {
-        console.error('Error claim token:', error);
+        console.error('Error request claim:', error);
         throw error;
     }
 };
+
+export const getRequestedClaim = async () : Promise<RequestedClaimPayload[]> => {
+    try {
+        const response = await axiosInstance.get('/tg/request-claim');
+        return response.data.data;
+    } catch (error) {
+        console.error('Error getting requested claim:', error);
+        throw error;
+    }
+}
 
 export const upScore = async (data: UpScorePayload) => {
     try {

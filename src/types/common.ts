@@ -6,3 +6,10 @@ export type UserInfo = {
     language_code: string;
     is_premium: boolean;
 }
+
+export type DeployInfo = {
+    claimMaster: string;
+    merkeleProof: string;
+    treeIndex: string;
+    amount: string;
+}
