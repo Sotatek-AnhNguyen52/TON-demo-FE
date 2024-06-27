@@ -11,5 +11,5 @@ export type DeployInfo = {
     claimMaster: string;
     merkeleProof: string;
     treeIndex: string;
-    amount: string;
+    id: string;
 }

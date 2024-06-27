@@ -15,7 +15,7 @@ export const fetchData = async (
     if (!response.ok) {
       throw new Error(`Network response was not ok: ${response.statusText}`);
     }
-
+    
     const res: JettonData = await response.json();
     return res;
   } catch (error) {

@@ -3,6 +3,7 @@ import TonWeb from "tonweb";
 import { contractAddress, tonWebApiKey } from "../configs";
 import { useTonWallet } from "@tonconnect/ui-react";
 
+export const testnet = "https://testnet.toncenter.com/api/v2/jsonRPC";
 const useFetchJettonBalance = (): [string | null, boolean, () => void, string | null] => {
   const [balance, setBalance] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -19,7 +20,6 @@ const useFetchJettonBalance = (): [string | null, boolean, () => void, string | 
     setLoading(false);
     setMetadata(null);
   }
-  const testnet = "https://testnet.toncenter.com/api/v2/jsonRPC";
 
   useEffect(() => {
     async function fetchJettonBalance() {

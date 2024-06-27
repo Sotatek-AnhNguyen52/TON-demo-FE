@@ -126,3 +126,13 @@ export const loginUser = async (userInfo: UserInfo): Promise<LoginResponse | nul
         throw error;
     }
 };
+
+export const updateIsClaimed = async (id: string) => {
+    try {
+        await axiosInstance.post('/tg/claim', { id });
+        return true;
+    } catch (error) {
+        console.error('Error updating claimed:', error);
+        throw error;
+    }
+}

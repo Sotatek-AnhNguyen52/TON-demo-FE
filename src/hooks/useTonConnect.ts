@@ -1,6 +1,5 @@
-import { CHAIN, useTonConnectUI } from "@tonconnect/ui-react";
-import { Sender, SenderArguments } from "@ton/core";
-import { chain } from "../configs";
+import { useTonConnectUI } from '@tonconnect/ui-react';
+import { Sender, SenderArguments } from '@ton/core';
 
 export function useTonConnect(): { sender: Sender; connected: boolean } {
   const [tonConnectUI] = useTonConnectUI();
@@ -13,11 +12,10 @@ export function useTonConnect(): { sender: Sender; connected: boolean } {
             {
               address: args.to.toString(),
               amount: args.value.toString(),
-              payload: args.body?.toBoc().toString("base64"),
+              payload: args.body?.toBoc().toString('base64'),
             },
           ],
           validUntil: Date.now() + 5 * 60 * 1000,
-          network: chain === "mainnet" ? CHAIN.MAINNET : CHAIN.TESTNET,
         });
       },
     },

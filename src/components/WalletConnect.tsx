@@ -43,7 +43,6 @@ const WalletConnect: React.FC = () => {
     const bal = new BN(balance);
     
     const integerPart = bal.div(divisor);
-    
     const fractionalPart = bal.mod(divisor).toString().padStart(decimal.toNumber(), '0');
   
     return `${integerPart.toString()}.${fractionalPart}`;
