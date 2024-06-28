@@ -1,5 +1,5 @@
 {
-    "url": "http://localhost:3000",      
+    "url": "https://ton-demo.sotatek.works",      
     "name": "Create React App Sample",               
-    "iconUrl": "http://localhost:3000/logo512.png"
+    "iconUrl": "https://ton-demo.sotatek.works/logo512.png"
 }

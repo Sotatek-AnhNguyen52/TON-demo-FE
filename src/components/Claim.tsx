@@ -28,6 +28,7 @@ import {
 } from "@ton/core";
 import { useClaimHelperContract } from "../hooks/useClaimHelperContract";
 import { useTonClient } from "../hooks/useTonClient";
+import { delay, getTonweb, refreshTokenBalance } from "../helper";
 
 window.Buffer = window.Buffer || Buffer;
 
@@ -42,7 +43,9 @@ const ButtonClaim: React.FC = () => {
   const debouncedPoints = useDebounce(points, 1000);
   const [deployInfo, setDeployInfo] = useState<DeployInfo>();
   const [tonConnectUI, setOptions] = useTonConnectUI();
-  const [claimHelper, setClaimHelper] = useState<string | null>(localStorage.getItem(claimHelperAddress) || null);
+  const [claimHelper, setClaimHelper] = useState<string | null>(
+    localStorage.getItem(claimHelperAddress) || null
+  );
 
   const [isDeploying, setIsDeploying] = useState<boolean>(false);
   const [isClaiming, setIsclaiming] = useState<boolean>(false);
@@ -50,14 +53,21 @@ const ButtonClaim: React.FC = () => {
   const userFriendlyAddress = useTonAddress();
   const wallet = useTonWallet();
   const { shouldRefreshBalance } = useAppContext();
+  const { sendClaim, getClaimed } = useClaimHelperContract(claimHelper);
 
   const client = useTonClient();
+
+  const updateScore = async () => {
+    const scoreData = await getScore();
+    if (scoreData) {
+      setCount(Number(scoreData.value.points));
+    }
+  };
 
   useEffect(() => {
     const fetchInitialScore = async () => {
       try {
-        const scoreData = await getScore();
-        setCount(Number(scoreData.value.points));
+        updateScore();
       } catch (error) {
         console.error("Failed to fetch initial score", error);
       }
@@ -69,7 +79,7 @@ const ButtonClaim: React.FC = () => {
   useEffect(() => {
     const getRequest = async () => {
       const data = await getRequestedClaim();
-      console.log("🚀 ~ getRequest ~ info:", data)
+      console.log("🚀 ~ getRequest ~ info:", data);
       if (data && data.length > 0) {
         const info = data[0];
         setIsRequestedClaim(true);
@@ -86,18 +96,17 @@ const ButtonClaim: React.FC = () => {
 
   useEffect(() => {
     if (debouncedPoints > 0) {
-      const updateScore = async () => {
+      const saveScores = async () => {
         try {
           await upScore({ points: debouncedPoints, remaining_energy: 123234 });
           console.log("updated!");
-          const scoreData = await getScore();
-          setCount(Number(scoreData.value.points));
+          updateScore();
         } catch (error) {
           console.error("Failed to update score", error);
         }
       };
 
-      updateScore();
+      saveScores();
     }
   }, [debouncedPoints]);
 
@@ -128,13 +137,10 @@ const ButtonClaim: React.FC = () => {
       amount: count.toString(),
     });
     if (data) {
-      const scoreData = await getScore();
-      setCount(Number(scoreData.value.points));
+      updateScore();
     }
     setRequestingClaim(false);
   };
-
-  const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
   const handleDeploy = async () => {
     if (!deployInfo || !wallet) {
@@ -156,7 +162,7 @@ const ButtonClaim: React.FC = () => {
       const stateInit: StateInit = {
         code: Cell.fromBoc(Buffer.from(CELL_CODE, "hex"))[0],
         data: payload,
-      }
+      };
 
       const stateInitBuilder = beginCell();
       storeStateInit(stateInit)(stateInitBuilder);
@@ -183,9 +189,13 @@ const ButtonClaim: React.FC = () => {
           const startTime = Date.now();
           while (Date.now() - startTime < 40000) {
             const isDeployed = await client.isContractDeployed(helperAddress);
+            console.log("🚀 ~ checkDeployment ~ isDeployed:", isDeployed);
             if (isDeployed) {
               setIsDeploying(false);
-              localStorage.setItem(claimHelperAddress, helperAddress.toString());
+              localStorage.setItem(
+                claimHelperAddress,
+                helperAddress.toString()
+              );
               setClaimHelper(helperAddress.toString());
               return;
             }
@@ -202,7 +212,6 @@ const ButtonClaim: React.FC = () => {
       console.error("Failed to deploy contract", error);
     }
   };
-  const { sendClaim, getClaimed } = useClaimHelperContract(claimHelper);
 
   const handleClaim = async () => {
     if (!wallet || !claimHelper || !deployInfo) {
@@ -211,8 +220,13 @@ const ButtonClaim: React.FC = () => {
     try {
       const { merkeleProof } = deployInfo;
       const proof = Cell.fromBoc(Buffer.from(merkeleProof, "hex"))[0];
-      // const queryId = BigInt(21);
       setIsclaiming(true);
+
+      const lastTx = (
+        await getTonweb().getTransactions(wallet.account.address, 1)
+      )[0];
+      const lastTxHash = lastTx.transaction_id.hash;
+
       await sendClaim(proof);
       const checkClaimed = async () => {
         const startTime = Date.now();
@@ -225,10 +239,15 @@ const ButtonClaim: React.FC = () => {
             if (updateClaimed) {
               localStorage.removeItem(claimHelperAddress);
               setClaimHelper(null);
+              setIsRequestedClaim(false);
             }
+            refreshTokenBalance(
+              wallet.account.address,
+              lastTxHash,
+              shouldRefreshBalance
+            );
             setTimeout(() => {
               setDisplaySuccess(false);
-              shouldRefreshBalance();
             }, 2000);
             return;
           }
@@ -255,11 +274,21 @@ const ButtonClaim: React.FC = () => {
       </div>
       <b>{"Count: " + count}</b>
       {claimHelper ? (
-        <div className="my-claim-button" onClick={handleClaim}>
+        <div
+          className="my-claim-button"
+          onClick={() => {
+            if (!isClaiming) handleClaim();
+          }}
+        >
           {isClaiming ? "Claiming..." : "Claim"}
         </div>
       ) : isRequestedClaim ? (
-        <div className="my-claim-button" onClick={handleDeploy}>
+        <div
+          className="my-claim-button"
+          onClick={() => {
+            if (!isDeploying) handleDeploy();
+          }}
+        >
           {isDeploying ? "Deploying..." : "Deploy"}
         </div>
       ) : (
@@ -272,12 +301,10 @@ const ButtonClaim: React.FC = () => {
           {requestingClaim ? "Requesting..." : "Request Claim"}
         </div>
       )}
-       {/* {transactionStatus && (
+      {/* {transactionStatus && (
         <div className="transaction-status">{transactionStatus}</div>
       )} */}
-      {displaySuccess && (
-        <div className="success-message">Successful!</div>
-      )}
+      {displaySuccess && <div className="success-message">Successful!</div>}
     </div>
   );
 };

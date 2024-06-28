@@ -4,15 +4,15 @@ import { JWT } from '../constant';
 import { apiUrl } from '../configs';
 import { axiosInstance } from './axios';
 
-// axiosInstance.interceptors.request.use((config) => {
-//     const authToken = localStorage.getItem(JWT);
-//     if (authToken) {
-//         config.headers['Authorization'] = `Bearer ${authToken}`;
-//     }
-//     return config;
-// }, (error) => {
-//     return Promise.reject(error);
-// });
+axiosInstance.interceptors.request.use((config) => {
+    const authToken = localStorage.getItem(JWT);
+    if (authToken) {
+        config.headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
 
 const axiosInstanceNotAuth = axios.create({
     baseURL: apiUrl,
@@ -66,33 +66,23 @@ export interface LoginResponse {
     message: string;
 }
 
-// export const claim = async (data: ClaimPayload) => {
-//     try {
-//         const response = await axiosInstance.post('/tg/claim', data);
-//         return response.data;
-//     } catch (error) {
-//         console.error('Error claim token:', error);
-//         throw error;
-//     }
-// };
-
 export const requestClaim = async (data: RequestClaimPayload) => {
     try {
         const response = await axiosInstance.post('/tg/request-claim', data);
         return response.data.data;
     } catch (error) {
         console.error('Error request claim:', error);
-        throw error;
+        return null;
     }
 };
 
-export const getRequestedClaim = async () : Promise<RequestedClaimPayload[]> => {
+export const getRequestedClaim = async () : Promise<RequestedClaimPayload[] | null> => {
     try {
         const response = await axiosInstance.get('/tg/request-claim');
         return response.data.data;
     } catch (error) {
         console.error('Error getting requested claim:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -102,17 +92,17 @@ export const upScore = async (data: UpScorePayload) => {
         return response.data;
     } catch (error) {
         console.error('Error updating score:', error);
-        throw error;
+        return null;
     }
 };
 
-export const getScore = async (): Promise<GetScoreResponse> => {
+export const getScore = async (): Promise<GetScoreResponse | null> => {
     try {
         const response = await axiosInstance.get('/game/getscore');
         return response.data;
     } catch (error) {
         console.error('Error getting score:', error);
-        throw error;
+        return null;
     }
 };
 
@@ -123,16 +113,16 @@ export const loginUser = async (userInfo: UserInfo): Promise<LoginResponse | nul
         return data;
     } catch (error) {
         console.error('Error logging in:', error);
-        throw error;
+        return null;
     }
 };
 
 export const updateIsClaimed = async (id: string) => {
     try {
-        await axiosInstance.post('/tg/claim', { id });
+        await axiosInstance.post(`/tg/claim/${id}`);
         return true;
     } catch (error) {
         console.error('Error updating claimed:', error);
-        throw error;
+        return null;
     }
 }

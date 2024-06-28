@@ -64,6 +64,10 @@
     font: 'Inter';
 }
 
+.success-message {
+  color: green;
+}
+
 @keyframes floatAndFade {
     0% {
         opacity: 1;
