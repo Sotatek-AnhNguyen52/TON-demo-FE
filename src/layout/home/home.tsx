@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useAppContext } from "../../contexts/AppContext";
+import React from "react";
 import "./home.css";
 import WalletConnect from "../../components/WalletConnect";
 import ButtonClaim from "../../components/Claim";

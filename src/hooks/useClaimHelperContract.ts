@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { ClaimHelper } from '../contracts/claimHelper';
 import { useTonClient } from './useTonClient';
 import { useAsyncInitialize } from './useAsyncInitialize';

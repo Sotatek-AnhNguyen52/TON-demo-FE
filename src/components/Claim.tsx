@@ -10,12 +10,9 @@ import {
 } from "../service/game-service";
 import useDebounce from "../hooks/use-debounce";
 import {
-  useTonAddress,
   useTonConnectUI,
   useTonWallet,
-  CHAIN,
 } from "@tonconnect/ui-react";
-import useFetchJettonBalance from "../hooks/use-fetch-jetton-balance";
 import { useAppContext } from "../contexts/AppContext";
 import { DeployInfo } from "../types/common";
 import {
@@ -39,10 +36,9 @@ const ButtonClaim: React.FC = () => {
   const [isRequestedClaim, setIsRequestedClaim] = useState<boolean>(false);
   const [requestingClaim, setRequestingClaim] = useState<boolean>(false);
   const [displaySuccess, setDisplaySuccess] = useState<boolean>(false);
-  const [transactionStatus, setTransactionStatus] = useState<string>("");
   const debouncedPoints = useDebounce(points, 1000);
   const [deployInfo, setDeployInfo] = useState<DeployInfo>();
-  const [tonConnectUI, setOptions] = useTonConnectUI();
+  const [tonConnectUI] = useTonConnectUI();
   const [claimHelper, setClaimHelper] = useState<string | null>(
     localStorage.getItem(claimHelperAddress) || null
   );
@@ -50,7 +46,6 @@ const ButtonClaim: React.FC = () => {
   const [isDeploying, setIsDeploying] = useState<boolean>(false);
   const [isClaiming, setIsclaiming] = useState<boolean>(false);
 
-  const userFriendlyAddress = useTonAddress();
   const wallet = useTonWallet();
   const { shouldRefreshBalance } = useAppContext();
   const { sendClaim, getClaimed } = useClaimHelperContract(claimHelper);
@@ -128,12 +123,12 @@ const ButtonClaim: React.FC = () => {
   };
 
   const handleRequestClaim = async () => {
-    if (count === 0 || !userFriendlyAddress) {
+    if (count === 0 || !wallet) {
       return;
     }
     setRequestingClaim(true);
     const data = await requestClaim({
-      to: userFriendlyAddress,
+      to: wallet.account.address,
       amount: count.toString(),
     });
     if (data) {
@@ -259,7 +254,6 @@ const ButtonClaim: React.FC = () => {
     } catch (error) {
       setIsclaiming(false);
       console.error("Failed to claim", error);
-      setTransactionStatus("Failed to claim");
     }
   };
 

@@ -46,7 +46,7 @@ export const refreshTokenBalance = async (address: string, lastTxHash: any, refr
     let txHash = lastTxHash;
     console.log("🚀 ~ refreshTokenBalance ~ lastTxHash:", lastTxHash)
     const startTime = Date.now();
-    while (txHash == lastTxHash && (Date.now() - startTime) < 30000) {
+    while (txHash === lastTxHash && (Date.now() - startTime) < 30000) {
         await delay(1500);
         let tx = (await tonweb.getTransactions(address, 1))[0];
         txHash = tx.transaction_id.hash;

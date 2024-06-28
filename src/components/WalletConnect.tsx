@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
+import { TonConnectButton } from "@tonconnect/ui-react";
 import TonWeb from "tonweb";
 import { Buffer } from "buffer";
 import "../styles/wallet-connect.css";
 import { useAppContext } from "../contexts/AppContext";
-import { contractAddress } from "../configs";
-import useFetchJettonBalance from "../hooks/use-fetch-jetton-balance";
 import { fetchData } from "../service/token-service";
 
 const BN = TonWeb.utils.BN;

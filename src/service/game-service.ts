@@ -26,10 +26,6 @@ interface UpScorePayload {
     remaining_energy: number;
 }
 
-interface ClaimPayload {
-    to: string;
-}
-
 interface RequestClaimPayload {
     to: string;
     amount: string;

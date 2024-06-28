@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useState, createContext, useContext, useRef } from 'react';
+import React, { PropsWithChildren, useEffect, useState, createContext, useContext } from 'react';
 import { UserInfo } from '../types/common';
 import { parseTGHashData } from '../helper';
 import { loginUser } from '../service/game-service';
