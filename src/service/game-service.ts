@@ -6,9 +6,9 @@ import { axiosInstance } from './axios';
 
 axiosInstance.interceptors.request.use((config) => {
     const authToken = localStorage.getItem(JWT);
-    if (authToken) {
-        config.headers['Authorization'] = `Bearer ${authToken}`;
-    }
+    // if (authToken) {
+    config.headers['Authorization'] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIzMTEsInVzZXJuYW1lIjoidmlwX2FjY291bnQiLCJyZWZlcnJhbF9jb2RlIjoiZTgyZmExMTVjOWQ0NDJlYzk0OWQ3NGU1Y2UzZDAyMTIiLCJpYXQiOjE3MjEzODE0NDZ9.Va7p3QouMXYiuUEbR0JnnkN6lzsLjadAIVFi2ozIuBA`;
+    // }
     return config;
 }, (error) => {
     return Promise.reject(error);
@@ -72,7 +72,7 @@ export const requestClaim = async (data: RequestClaimPayload) => {
     }
 };
 
-export const getRequestedClaim = async () : Promise<RequestedClaimPayload[] | null> => {
+export const getRequestedClaim = async (): Promise<RequestedClaimPayload[] | null> => {
     try {
         const response = await axiosInstance.get('/tg/request-claim');
         return response.data.data;

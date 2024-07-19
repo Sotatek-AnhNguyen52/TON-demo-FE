@@ -54,6 +54,8 @@ const ButtonClaim: React.FC = () => {
 
   const updateScore = async () => {
     const scoreData = await getScore();
+    console.log("scoreData after update", scoreData);
+
     if (scoreData) {
       setCount(Number(scoreData.value.points));
     }
@@ -131,9 +133,9 @@ const ButtonClaim: React.FC = () => {
       to: wallet.account.address,
       amount: count.toString(),
     });
-    if (data) {
-      updateScore();
-    }
+
+    updateScore();
+
     setRequestingClaim(false);
   };
 
@@ -228,6 +230,11 @@ const ButtonClaim: React.FC = () => {
         while (Date.now() - startTime < 40000) {
           const claimed = await getClaimed();
           if (claimed) {
+            await refreshTokenBalance(
+              wallet.account.address,
+              lastTxHash,
+              shouldRefreshBalance
+            );
             setIsclaiming(false);
             setDisplaySuccess(true);
             const updateClaimed = await updateIsClaimed(deployInfo.id);
@@ -236,11 +243,6 @@ const ButtonClaim: React.FC = () => {
               setClaimHelper(null);
               setIsRequestedClaim(false);
             }
-            refreshTokenBalance(
-              wallet.account.address,
-              lastTxHash,
-              shouldRefreshBalance
-            );
             setTimeout(() => {
               setDisplaySuccess(false);
             }, 2000);

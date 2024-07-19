@@ -6,7 +6,7 @@ import Home from "./layout/home/home";
 
 const App: React.FC = () => {
   return (
-    <TonConnectUIProvider manifestUrl="https://ton-demo.sotatek.works/tonconnect-manifest.json">
+    <TonConnectUIProvider manifestUrl="https://ton.sotatek.works/tonconnect-manifest.json">
       <AppProvider>
         <div className="App">
           <Home />
